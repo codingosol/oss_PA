@@ -1,6 +1,7 @@
 // https://github.com/psw9808/Java-Term-Project 에서 추가 기능 + GUI를 이용해 시각화하기로 함
 // 시대 배경 조선시대로 바꾸고 이벤트 추가함
 // 점수 시스템 추가
+// 스코어보드 시스템 추가
 
 import java.util.*;
 import java.lang.*;
@@ -14,7 +15,7 @@ class Kingdom{ // 메인 클래스 Kingdom
 		Statesbase statesbase = new Statesbase();
 		States states = new States();
 		Events events = new Events();
-		
+		String username = "";
 		while(true){
 			states.year=1;
 			systems.start();
@@ -44,8 +45,10 @@ class Kingdom{ // 메인 클래스 Kingdom
 }
 
 class Systems{ // 시스템 클래스 (시작/끝) 
-	
+	String username = "";
 	void start(){ // 시작 (파일 입출력,예외처리)
+		Scanner scn = new Scanner(System.in);
+		username = scn.nextLine();
 		try{
 			File storyfile = new File("story.txt");
 			Scanner story = new Scanner(storyfile);
@@ -70,7 +73,8 @@ class Systems{ // 시스템 클래스 (시작/끝)
 		while(loop==0){
 			try{
 				System.out.println("[점수 : %d]\n", score);
-				System.out.print("\n 	다음 왕으로 계속 진행하시겟습니까? ( 1: 네 / 2: 아니오 )  : ");
+				printscore(username, score);
+				System.out.print("\n 	다음 왕으로 계속 진행하시겠습니까? ( 1: 네 / 2: 아니오 )  : ");
 				input = userinput.nextInt();
 				if (input!=1 && input!=2) throw new NotRightNumberException();
 				else if(input == 1) {
@@ -91,6 +95,73 @@ class Systems{ // 시스템 클래스 (시작/끝)
 		if(loop==1) return true;
 		else return false;
 	}
+
+	void printscore(String username, int userscore) {
+	      // 먼저 스코어보드에 있는 파일을 읽어옴. 유저명:점수 형식으로 되어 있음
+	      try {
+	         File scoreFile = new File("scoreboard.txt");
+	         BufferedReader br = new BufferedReader(new FileReader(scoreFile));
+	         ArrayList<Pair<String,Integer>> scores =  new ArrayList<>();
+	         String line;
+	         while((line = br.readLine()) != null) {
+	            String parts[] = line.split(":");
+	            String username = parts[0];
+	            int userscore = Integer.parseInt(parts[1]);
+	            scores.add(new Pair<>(username,userscore));
+	         }
+	         // 읽기 끝나면 새로운 점수 추가 후 정렬
+	         // 점수가 너무 많아 스코어보드가 길어지는 것을 방지하기 위해 TOP 10 score만 남기기로 함
+	         Pair<String,Integer> pair = new Pair<>(username,userscore);
+	         scores.add(pair);
+	         scores.sort((p1, p2) -> Integer.compare(p2.getY(), p1.getY()));
+	         // 이제 파일에 작성
+	         BufferedWriter bw = new BufferedWriter(new FileWriter(scoreFile));
+	         // 10개만 작성
+	         int cnt = 1;
+	         for (Pair<String,Integer> p : scores)
+	         {
+	            if(cnt == 10)
+	               break;
+	            bw.write(p.getX() + ":" + p.getY());
+	            bw.newLine();
+	            cnt++;
+	         }
+	         bw.close();
+	         for (Pair<String,Integer> p : scores) // 이번에 추가된 점수에 +) 표기
+	         {
+	            if(p.equals(pair)) {
+	               System.out.println("+)");
+	            }
+	            System.out.println(p.getX() + ":" + p.getY() + "\n");
+	         }
+	      }
+	      catch(FileNotFoundException e) {
+	         System.out.println("\n <스코어보드 없음> (스코어보드 파일 없음)\n");
+	      }
+	      catch(IOException e)
+	      {
+	         System.out.println("\n <IOException> (스코어보드 파일 오류)\n");
+	      }
+	      
+	   }
+	   
+	   class Pair <T1, T2>{
+	       private T1 x;
+	       private T2 y;
+
+	       Pair(T1 x, T2 y) {
+	           this.x = x;
+	           this.y = y;
+	       }
+
+	       public T1 getX(){
+	           return x;
+	       }
+
+	       public T2 getY(){
+	           return y;
+	       }
+	   }
 }
 
 class Statesbase{ // State 클래스의 상속을 위한 Super클래스 
@@ -176,6 +247,7 @@ class States extends Statesbase{ // State 클래스
          	descendent += 1; // 배율 증가
          	score += 10000; // 추가 점수 10000점
          	year = 1; // 연도 초기화
+			return result;
       	}
 		if ((army>0&&army<100)&&(money>0&&money<100)&&(people>00&&people<100)&&(sadaebu>0&&sadaebu<100)){
 			year++;
