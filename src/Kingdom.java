@@ -148,8 +148,10 @@ class GameScreen extends JFrame { // 게임이 진행되는 Frame
 	States states;
     Events events;
 	GameScreen(States states, Events events) {
-        this.states = states;
-        this.events = events;
+      this.states = states;
+      this.events = events;
+      setSize(1000, 400);
+      // X11 자체의 문제로 크기가 증가하지 않음...
 		setTitle("Joseon");
 		JScrollPane scrollPane = new JScrollPane(eventarea);
 		setLayout(new BorderLayout());
@@ -162,16 +164,15 @@ class GameScreen extends JFrame { // 게임이 진행되는 Frame
 		panel.add(nbutton);
 		add(panel, BorderLayout.SOUTH);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLocation(400, 400);
-        setSize(1000, 400);
-        setVisible(true);
+      setLocation(400, 400);
+      setVisible(true);
 		// 기본 프레임 설정
 		ybutton.setPreferredSize(new Dimension(160, 30));
-        ybutton.addActionListener(new ButtonClickListener());
-        // yes 버튼의 리스너 추가
-        nbutton.setPreferredSize(new Dimension(160, 30));
-        nbutton.addActionListener(new ButtonClickListener());
-        // no 버튼의 리스너 추가
+      ybutton.addActionListener(new ButtonClickListener());
+      // yes 버튼의 리스너 추가
+      nbutton.setPreferredSize(new Dimension(160, 30));
+      nbutton.addActionListener(new ButtonClickListener());
+      // no 버튼의 리스너 추가
         // 초기 설정 시작
         eventarea.append("<나라의 상태를 설정합니다.>\n"); // 처음 나라의 상태를 설정할때 메세지 출력
         try{
