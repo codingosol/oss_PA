@@ -8,8 +8,15 @@ RUN apt-get update && apt-get install -y \
     libxtst6 \
     libxi6 \
     libxext6 \
-    x11-apps
+    x11-apps \
+    fonts-nanum \
+    locales
 
+# 로케일 설정
+RUN locale-gen ko_KR.UTF-8
+ENV LANG ko_KR.UTF-8
+ENV LANGUAGE ko_KR:ko
+ENV LC_ALL ko_KR.UTF-8
 # 애플리케이션 파일을 컨테이너에 복사
 COPY src/Kingdom.java /app/src/Kingdom.java
 COPY event.txt /app/event.txt
@@ -20,10 +27,10 @@ COPY story.txt /app/story.txt
 WORKDIR /app
 
 # 자바 파일 컴파일 
-RUN javac src/Kingdom.java
+RUN javac -encoding UTF-8 src/Kingdom.java
 
 # 애플리케이션 실행 
-CMD ["java", "-cp", "src", "Kingdom"]
+CMD ["java", "-Dfile.encoding=UTF-8", "-cp", "src", "Kingdom"]
 
 # xhost +local:docker로 x11 포워딩 지정 후
 # docker run -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix kingdom:0.1 로 실행
