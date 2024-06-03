@@ -1,5 +1,6 @@
 // https://github.com/psw9808/Java-Term-Project 에서 추가 기능 + GUI를 이용해 시각화하기로 함
-    
+// 시대 배경 조선시대로 바꾸고 이벤트 추가함
+
 import java.util.*;
 import java.lang.*;
 import java.io.*;
@@ -103,14 +104,14 @@ class States extends Statesbase{ // State 클래스
 	public int army;
 	public int money;
 	public int people;
-	public int church;
+	public int sadaebu;
 	
 	
 	void setstates(){ //맨 처음 나라의 상태를 랜덤설정
 	army = (int)(Math.random()*41)+30;
 	money = (int)(Math.random()*41)+30;
 	people = (int)(Math.random()*41)+30;
-	church = (int)(Math.random()*41)+30;
+	sadaebu = (int)(Math.random()*41)+30;
 	}
 	
 	void showstates(){ // 나라의 상태 및 년도를 출력
@@ -121,12 +122,12 @@ class States extends Statesbase{ // State 클래스
 		if(money>100) money=100;
 		if(people<0) people=0;
 		if(people>100) people=100;
-		if(church<0) church=0;
-		if(church>100) church=100;
+		if(sadaebu<0) sadaebu=0;
+		if(sadaebu>100) sadaebu=100;
 		
 		System.out.printf("[Year %d]\n",year);
 		System.out.printf("<나라의 상태>\n");
-		System.out.printf(" [↖] 군사  %4d : ",army);	// 나라의 4가지 상태를 기호로 표현
+		System.out.printf(" [軍] 군사  %4d : ",army);	// 나라의 4가지 상태를 기호로 표현
 		for(int i=0;i<army/5;i++){						// 나라의 상태를 시각적으로 표현하는 기능을 추가
 			System.out.printf("■");
 		}
@@ -134,7 +135,7 @@ class States extends Statesbase{ // State 클래스
 			System.out.printf("□");
 		}
 		System.out.println();
-		System.out.printf(" [＄] 경제  %4d : ",money);
+		System.out.printf(" [商] 경제  %4d : ",money);
 		for(int i=0;i<money/5;i++){
 			System.out.printf("■");
 		}
@@ -142,7 +143,7 @@ class States extends Statesbase{ // State 클래스
 			System.out.printf("□");
 		}
 		System.out.println();
-		System.out.printf(" [웃] 민심  %4d : ",people);
+		System.out.printf(" [民] 민심  %4d : ",people);
 		for(int i=0;i<people/5;i++){
 			System.out.printf("■");
 		}
@@ -150,11 +151,11 @@ class States extends Statesbase{ // State 클래스
 			System.out.printf("□");
 		}
 		System.out.println();
-		System.out.printf(" [†] 종교  %4d : ",church);
-		for(int i=0;i<church/5;i++){
+		System.out.printf(" [士] 충성  %4d : ",sadaebu);
+		for(int i=0;i<sadaebu/5;i++){
 			System.out.printf("■");
 		}
-		for(int j=0;j<20-church/5;j++){
+		for(int j=0;j<20-sadaebu/5;j++){
 			System.out.printf("□");
 		}
 		System.out.println();
@@ -165,7 +166,7 @@ class States extends Statesbase{ // State 클래스
 		
 		boolean result=true;
 
-		if ((army>0&&army<100)&&(money>0&&money<100)&&(people>00&&people<100)&&(church>0&&church<100)){
+		if ((army>0&&army<100)&&(money>0&&money<100)&&(people>00&&people<100)&&(sadaebu>0&&sadaebu<100)){
 			year++;
 		}
 		
@@ -173,61 +174,61 @@ class States extends Statesbase{ // State 클래스
 			result=false;
 			super.ending();
 			System.out.println("군사 수치가 0이 되었습니다.");
-			System.out.println("장군 : 침략군이 성문까지 왔습니다! 우리에게는 이미 저들을 막을 만한 힘이 없습니다!");
-			System.out.println("왕은 남아 있던 군대를 이끌고 마지막으로 저항하려 했지만 왕좌 앞 계단에서 적병에게 살해당했다.");
+			System.out.println("장군 : 적군이 성문까지 왔습니다! 우리에게는 이미 저들을 막을 만한 힘이 없습니다!");
+			System.out.println("순식간에 도성까지 왜구가 들어왔고, 왕은 끝내 살해당했습니다.");
 		}
 		
 		else if(army>=100){
 			result=false;
 			super.ending();
 			System.out.println("군사 수치가 100이 되었습니다.");
-			System.out.println("장군 : 쿠데타가 일어났습니다! 전권을 제게 넘기십시오!");
-			System.out.println("모반을 일으킨 병사들은 왕을 성 안에서 가장 높은 탑에 유폐시키고 백골이 될 때까지 방치했다.");
+			System.out.println("장군 : 모반이 일어났습니다! 전권을 제게 넘기십시오!");
+			System.out.println("모반을 일으킨 병사들은 나약한 왕을 폐위시켜 가두었고 왕은 얼마 못가 죽었습니다.");
 		}
 		
 		else if(money<=0){
 			result=false;
 			super.ending();
 			System.out.println("경제 수치가 0이 되었습니다.");
-			System.out.println("나라가 완전히 망했습니다. 상인과 제후가 지배하고 있습니다.");
+			System.out.println("나라가 망했습니다. 극심한 기근으로 아무것도 남지 않았습니다.");
 		}
 		
 		else if(money>=100){
 			result=false;
 			super.ending();
 			System.out.println("경제 수치가 100이 되었습니다.");
-			System.out.println("고급 식재료를 잔뜩 매입해 매일 호화로운 연회를 열다가 나라가 완전히 망했습니다.");
+			System.out.println("왕이 궁궐 보수와 호화로운 연회에 빠진 사이, 상인들이 새로운 지배층이 되어 왕조가 무너졌습니다.");
 		}
 		
 		else if(people<=0){
 			result=false;
 			super.ending();
 			System.out.println("민심 수치가 0이 되었습니다.");
-			System.out.println("굶주림에 처한 백성들이 폭동을 일으켰습니다. 더는 막을 수 없습니다!");
-			System.out.println("성은 폭도에게 점령당해 신하들도 뿔뿔이 흩어졌다. 왕에게 남은 건 비둘기 몇 마리 뿐이었다.");
+			System.out.println("굶주림에 처한 백성들이 팔도에서 반란을 일으켰습니다. 더는 막을 수 없습니다!");
+			System.out.println("신하들도 뿔뿔이 흩어졌습니다. 나라는 혼란에 빠졌고 혁명으로 새로운 왕조가 탄생했습니다.");
 		}
 		
 		else if(people>=100){
 			result=false;
 			super.ending();
 			System.out.println("민심 수치가 100이 되었습니다.");
-			System.out.println("도시에서 대규모 폭동이 일어나 폭도들이 성문을 부수려 하고 있습니다!");
-			System.out.println("폭동은 나날이 악화되어 마침내 왕의 침실이 불에 휩싸였다. 왕은 창문에서 뛰어내려 목숨을 잃었다.");
+			System.out.println("더는 왕을 두려워하지 않는 백성들이 유가적 질서를 무너트리기 위해 난을 일으켰습니다!");
+			System.out.println("궁궐이 불타고 있습니다. 왕은 도망치다 갈대밭에서 목숨을 잃었습니다.");
 		}
 		
-		else if(church<=0){
+		else if(sadaebu<=0){
 			result=false;
 			super.ending();
-			System.out.println("종교 수치가 0이 되었습니다.");
-			System.out.println("교회의 권위가 약화되어, 이미 백성의 폭동을 억제할 수 없습니다. 폐하도 어서 도망치세요!");
-			System.out.println("왕은 도망가려 했지만 도중에 이교도인 폭도에게 습격당해 사망했다.");
+			System.out.println("충성 수치가 0이 되었습니다.");
+			System.out.println("당신같은 폭군을 섬길 수는 없소! 자리에서 내려오시오!");
+			System.out.println("왕은 폐위되었고 대신들은 새로운 왕을 추대하였습니다.");
 		}
-		else if(church>=100){
+		else if(sadaebu>=100){
 			result=false;
 			super.ending();
-			System.out.println("종교 수치가 100이 되었습니다.");
-			System.out.println("교황군이 우리 국가를 통치하고 있다. 바로 지상의 낙원이야!");
-			System.out.println("새로운 과두정치 대표들은 왕을 꼭두각시로 남기려 했다. 그러나 교회는 왕을 산 채로 화형에 처하기로 결정했다.");
+			System.out.println("충성 수치가 100이 되었습니다.");
+			System.out.println("이제 더는 상소를 읽으실 필요 없습니다. 저희가 알아서 하겠습니다.");
+			System.out.println("세도가들이 국정을 독점하기로 했습니다. 꼭두각시 왕을 만든 그들은 분열되어 서로 싸우기 시작했습니다.");
 		}
 		
 		return result;
@@ -281,27 +282,27 @@ class States extends Statesbase{ // State 클래스
 				symbol = event.next();
 			
 				switch(symbol){
-					case "↖":
+					case "軍":
 						value = event.nextInt() + (int)(Math.random()*20)-10;
 						army = army + value;
 						System.out.print(symbol +" "+value+"  ");
 						break;
 					
-					case "＄":
+					 case "商":
 						value = event.nextInt() + (int)(Math.random()*20)-10;
 						money = money + value;
 						System.out.print(symbol +" "+value+"  ");
 						break;
 					
-					case "웃":
+					case "民":
 						value = event.nextInt() + (int)(Math.random()*20)-10;
 						people = people + value;
 						System.out.print(symbol +" "+value+"  ");
 						break;
 						
-					case "†":
+					case "士":
 						value = event.nextInt() + (int)(Math.random()*20)-10;
-						church = church + value;
+						sadaebu = sadaebu + value;
 						System.out.print(symbol +" "+value+"  ");
 						break;
 				
