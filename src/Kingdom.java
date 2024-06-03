@@ -6,7 +6,9 @@
 // 스코어보드에 남을 이름을 입력하는 LoginScreen 창 추가
 // 스토리를 띄워줄 StoryScreen 추가, 여러 번 플레이 할때 매번 뜨지 않도록 Story 위치 조절
 // 게임 플레이가 이루어지는 GameScreen 추가, start 내부에 GameScreen 추가
-// +기존의 states에서 이루어졌던 sysout 함수들을 모두 textarea에 관련된 append함수로 수정
+// +) 기존의 states에서 이루어졌던 sysout 함수들을 모두 textarea에 관련된 append함수로 수정
+// 게임 종료 창과 스코어보드를 출력하는 EndScreen 추가
+// +) 기타 함수 parameter와 코드 수정
 
 
 import java.util.*;
@@ -18,24 +20,23 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 
 class Kingdom{ // 메인 클래스 Kingdom 
-	public static void main(String[]args){
-		
-		Systems systems = new Systems();
-		Statesbase statesbase = new Statesbase();
-		States states = new States();
-		Events events = new Events();
-		String username = "";
-		StoryScreen story = new StoryScreen();
-		while(true){
-			states.year=1;
-			systems.start(states,events); // 게임 시작
-			if(systems.end(states.year,states.descendent,states.score)==false){
-				System.out.printf("\n <게임을 종료합니다.>\n");
-				break;
-			}
-		}
-	}
+   public static void main(String[]args){
+      
+      Systems systems = new Systems();
+      Statesbase statesbase = new Statesbase();
+      States states = new States();
+      Events events = new Events();
+      StoryScreen story = new StoryScreen();
+      while(true){
+         states.year=1;
+         systems.start(states,events); // 게임 시작
+         if(systems.end(states)==true){
+            break;
+         }
+      }
+   }
 }
+
 class LoginScreen extends JFrame{
 	JTextField Username;
 	String username;
@@ -218,47 +219,67 @@ class GameScreen extends JFrame { // 게임이 진행되는 Frame
 	
 }
 
-class Systems{ // 시스템 클래스 (시작/끝) 
-	String username = "";
-	void start(){ // 시작 (파일 입출력,예외처리)
-		LoginScreen login = new LoginScreen();
-		username = login.getUsername();
-		GameScreen game = new GameScreen(states,events);
+class EndScreen extends JFrame
+{
+	JTextArea gameresult = new JTextArea();
+	JTextArea scoreboard = new JTextArea();
+	boolean isquit = false;
+	EndScreen(States states, String username)
+	{
+		setTitle("Game Result");
+		setLayout(new BorderLayout());
+		add(gameresult, BorderLayout.NORTH);
+		add(scoreboard, BorderLayout.CENTER);
+		JPanel panel = new JPanel();
+		JButton restart = new JButton("다시 하기");
+		restart.addActionListener(new ButtonClickListener(this));
+		JButton quit = new JButton("게임 종료");
+		quit.addActionListener(new ButtonClickListener(this));
+		panel.add(restart);
+		panel.add(quit);
+		add(panel, BorderLayout.SOUTH);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocation(450, 200);
+        setSize(500, 800);
+        setVisible(true);
+        // 이번 게임 결과표
+		String str = String.format("[통치기간 : %d대, %d년]\n",states.descendent, states.year);
+		gameresult.append(str);
+		str = String.format("[점수 : %d]\n",states.score);
+		gameresult.append(str);
+		// 스코어보드 출력 후 스코어보드 아래에 재시작 여부 질문
+		printscore(scoreboard,username,states.score);
+		scoreboard.append("\n 게임을 다시 시작하시겠습니까?\n");
+		synchronized (this) { // 버튼을 클릭하기 전까지 wait.
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+       }
+	   dispose();
 	}
-	
-	boolean end(int year, int descendent, int score){ // 끝 (예외처리)
-		Scanner userinput = new Scanner(System.in);
-		int input;
-		int loop=0;
-		
-		System.out.printf("[통치기간 : %d대, %d년]\n", descendent, year);
-		while(loop==0){
-			try{
-				System.out.println("[점수 : %d]\n", score);
-				printscore(username, score);
-				System.out.print("\n 	다음 왕으로 계속 진행하시겠습니까? ( 1: 네 / 2: 아니오 )  : ");
-				input = userinput.nextInt();
-				if (input!=1 && input!=2) throw new NotRightNumberException();
-				else if(input == 1) {
-					
-					loop = 1;
-				}
-				else {
-					
-					loop = 2;
-				}
-			}catch(NotRightNumberException e2){
-				System.out.println("\n <1과 2중에 하나를 입력하세요.>");
-			}catch(InputMismatchException e3){
-				System.out.println("\n <입력은 아라비아 숫자 1과 2중 하나로 하여야 합니다.>");
-				userinput = new Scanner(System.in);
-			}
-		}
-		if(loop==1) return true;
-		else return false;
-	}
+	class ButtonClickListener implements ActionListener {
+		EndScreen parent; // 부모 EndScreen 참조 필드 추가
 
-	void printscore(String username, int userscore) {
+	    ButtonClickListener(EndScreen parent) {
+	        this.parent = parent;
+	    }
+
+	    public void actionPerformed(ActionEvent e) {
+	        if (e.getActionCommand().equals("다시 하기")) {
+	            // Yes 버튼이 클릭된 경우의 처리
+	            parent.isquit = false; // isquit 값을 false로 설정
+	        } else if (e.getActionCommand().equals("게임 종료")) {
+	            // No 버튼이 클릭된 경우의 처리
+	            parent.isquit = true; // isquit 값을 true로 설정
+	        }
+	        synchronized (EndScreen.this) { // wait 풀기
+	            EndScreen.this.notify();
+	        }
+	    }
+	}
+	void printscore(JTextArea board, String name, int score) {
 	      // 먼저 스코어보드에 있는 파일을 읽어옴. 유저명:점수 형식으로 되어 있음
 	      try {
 	         File scoreFile = new File("scoreboard.txt");
@@ -273,7 +294,7 @@ class Systems{ // 시스템 클래스 (시작/끝)
 	         }
 	         // 읽기 끝나면 새로운 점수 추가 후 정렬
 	         // 점수가 너무 많아 스코어보드가 길어지는 것을 방지하기 위해 TOP 10 score만 남기기로 함
-	         Pair<String,Integer> pair = new Pair<>(username,userscore);
+	         Pair<String,Integer> pair = new Pair<>(name,score);
 	         scores.add(pair);
 	         scores.sort((p1, p2) -> Integer.compare(p2.getY(), p1.getY()));
 	         // 이제 파일에 작성
@@ -289,20 +310,20 @@ class Systems{ // 시스템 클래스 (시작/끝)
 	            cnt++;
 	         }
 	         bw.close();
-	         for (Pair<String,Integer> p : scores) // 이번에 추가된 점수에 +) 표기
+	         for (Pair<String,Integer> p : scores)
 	         {
 	            if(p.equals(pair)) {
-	               System.out.println("+)");
+	               board.append("+)");
 	            }
-	            System.out.println(p.getX() + ":" + p.getY() + "\n");
+	            board.append(p.getX() + ":" + p.getY() + "\n");
 	         }
 	      }
 	      catch(FileNotFoundException e) {
-	         System.out.println("\n <스코어보드 없음> (스코어보드 파일 없음)\n");
+	         board.append("\n <스코어보드 없음> (스코어보드 파일 없음)\n");
 	      }
 	      catch(IOException e)
 	      {
-	         System.out.println("\n <IOException> (스코어보드 파일 오류)\n");
+	         board.append("\n <IOException> (스코어보드 파일 오류)\n");
 	      }
 	      
 	   }
@@ -324,6 +345,20 @@ class Systems{ // 시스템 클래스 (시작/끝)
 	           return y;
 	       }
 	   }
+}
+
+class Systems{ // 시스템 클래스 (시작/끝) 
+   String username = "";
+   void start(States states, Events events){ // 시작
+    	LoginScreen login = new LoginScreen(); // 로그인 창
+     	username = login.getUsername(); // 이름 입력
+      GameScreen game = new GameScreen(states, events); // 게임 실행
+   }
+   
+   boolean end(States states){ // 끝 (예외처리)
+      EndScreen end = new EndScreen(states,username);
+      return end.isquit;
+   }
 }
 
 class Statesbase{ // State 클래스의 상속을 위한 Super클래스 
