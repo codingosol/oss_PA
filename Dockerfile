@@ -1,27 +1,29 @@
-# 베이스 이미지로 Maven 사용
-FROM maven:3.8.4-openjdk-11 AS build
+# 베이스 이미지 설정
+FROM openjdk:11
+
+# 필요한 패키지 설치 (Xvfb 및 X11 라이브러리 포함)
+RUN apt-get update && apt-get install -y \
+    xvfb \
+    libxrender1 \
+    libxtst6 \
+    libxi6 \
+    libxext6 \
+    x11-apps
+
+# 애플리케이션 파일을 컨테이너에 복사
+COPY src/Kingdom.java /app/src/Kingdom.java
+COPY event.txt /app/event.txt
+COPY scoreboard.txt /app/scoreboard.txt
+COPY story.txt /app/story.txt
 
 # 작업 디렉토리 설정
 WORKDIR /app
 
-# Maven의 종속성 캐시를 활용하기 위해 먼저 pom.xml을 복사하고 종속성을 다운로드
-COPY pom.xml .
-RUN mvn dependency:go-offline
+# 자바 파일 컴파일 
+RUN javac src/Kingdom.java
 
-# 소스 코드 복사
-COPY src ./src
+# 애플리케이션 실행 
+CMD ["java", "-cp", "src", "Kingdom"]
 
-# 애플리케이션 빌드
-RUN mvn package
-
-# 런타임 이미지로 OpenJDK 사용
-FROM openjdk:11-jre-slim
-
-# 작업 디렉토리 설정
-WORKDIR /app
-
-# 빌드된 JAR 파일 복사
-COPY --from=build /app/target/*.jar app.jar
-
-# 애플리케이션 실행
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# xhost +local:docker로 x11 포워딩 지정 후
+# docker run -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix kingdom:0.1 로 실행

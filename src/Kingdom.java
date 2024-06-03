@@ -9,6 +9,7 @@
 // +) 기존의 states에서 이루어졌던 sysout 함수들을 모두 textarea에 관련된 append함수로 수정
 // 게임 종료 창과 스코어보드를 출력하는 EndScreen 추가
 // +) 기타 함수 parameter와 코드 수정
+// java GUI는 도커에서 작동 X, 그냥 일반 window에서만 실행하기로 함
 
 
 import java.util.*;
