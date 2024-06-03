@@ -4,6 +4,7 @@
 // 스코어보드 시스템 추가
 // GUI 적용 시작
 // 스코어보드에 남을 이름을 입력하는 LoginScreen 창 추가
+// 스토리를 띄워줄 StoryScreen 추가, 여러 번 플레이 할때 매번 뜨지 않도록 Story 위치 조절
 
 import java.util.*;
 import java.lang.*;
@@ -21,6 +22,7 @@ class Kingdom{ // 메인 클래스 Kingdom
 		States states = new States();
 		Events events = new Events();
 		String username = "";
+		StoryScreen story = new StoryScreen();
 		while(true){
 			states.year=1;
 			systems.start();
@@ -94,24 +96,69 @@ class LoginScreen extends JFrame{
         return username;
     }
 }
+
+class StoryScreen extends JFrame {
+    JTextArea textarea = new JTextArea();
+
+    StoryScreen() {
+        setTitle("Story");
+        setLayout(new BorderLayout());
+        textarea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(textarea);
+        add(scrollPane, BorderLayout.CENTER);
+        JPanel buttonPanel = new JPanel();
+        JButton button = new JButton("Start Game");
+        button.setPreferredSize(new Dimension(160, 30));
+        button.addActionListener(new ButtonClickListener());
+        buttonPanel.add(button);
+        add(buttonPanel, BorderLayout.SOUTH);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocation(400, 400);
+        setSize(1000, 300);
+        setVisible(true);
+        File storyfile = new File("story.txt");
+        try {
+            Scanner story = new Scanner(storyfile);
+            if (story.hasNextLine()) {
+                String firstLine = story.nextLine();
+                if (!firstLine.startsWith("")) {
+                    throw new InvalidStoryFormatException();
+                }
+                textarea.append(firstLine + "\n");
+            }
+
+            while (story.hasNextLine()) {
+                textarea.append(story.nextLine() + "\n");
+            }
+        } catch (FileNotFoundException e1) {
+            textarea.append("\n <스토리 생략> (스토리 파일 없음)\n");
+        } catch (InvalidStoryFormatException e2) {
+            textarea.append("\n 적합한 스토리 파일이 아님");
+        }
+
+        synchronized (this) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    class ButtonClickListener implements ActionListener {
+		 public void actionPerformed (ActionEvent e) {
+			 synchronized(StoryScreen.this) {
+	             StoryScreen.this.notify();
+	         }
+			 dispose();
+		 }
+	}
+}
+
 class Systems{ // 시스템 클래스 (시작/끝) 
 	String username = "";
 	void start(){ // 시작 (파일 입출력,예외처리)
 		LoginScreen login = new LoginScreen();
 		username = login.getUsername();
-		try{
-			File storyfile = new File("story.txt");
-			Scanner story = new Scanner(storyfile);
-			
-			System.out.println();
-			while(story.hasNext()){
-				System.out.println(story.nextLine());
-			}
-			System.out.println();
-			story.close();
-		}catch(FileNotFoundException e1){
-			System.out.println("\n <스토리 생략> (스토리 파일 없음)\n");
-		}
 	}
 	
 	boolean end(int year, int descendent, int score){ // 끝 (예외처리)
