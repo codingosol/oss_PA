@@ -1,5 +1,6 @@
 // https://github.com/psw9808/Java-Term-Project 에서 추가 기능 + GUI를 이용해 시각화하기로 함
 // 시대 배경 조선시대로 바꾸고 이벤트 추가함
+// 점수 시스템 추가
 
 import java.util.*;
 import java.lang.*;
@@ -34,7 +35,7 @@ class Kingdom{ // 메인 클래스 Kingdom
 				else break;
 			}
 			
-			if(systems.end(states.year)==false){
+			if(systems.end(states.year,states.descendent,states.score)==false){
 				System.out.printf("\n <게임을 종료합니다.>\n");
 				break;
 			}
@@ -60,14 +61,15 @@ class Systems{ // 시스템 클래스 (시작/끝)
 		}
 	}
 	
-	boolean end(int year){ // 끝 (예외처리)
+	boolean end(int year, int descendent, int score){ // 끝 (예외처리)
 		Scanner userinput = new Scanner(System.in);
 		int input;
 		int loop=0;
 		
-		System.out.printf("[통치기간 : %d년]\n",year);
+		System.out.printf("[통치기간 : %d대, %d년]\n", descendent, year);
 		while(loop==0){
 			try{
+				System.out.println("[점수 : %d]\n", score);
 				System.out.print("\n 	다음 왕으로 계속 진행하시겟습니까? ( 1: 네 / 2: 아니오 )  : ");
 				input = userinput.nextInt();
 				if (input!=1 && input!=2) throw new NotRightNumberException();
@@ -100,18 +102,21 @@ class Statesbase{ // State 클래스의 상속을 위한 Super클래스
 }
 
 class States extends Statesbase{ // State 클래스 
+	public int score;
+    public int descendent;
 	public int year;
 	public int army;
 	public int money;
 	public int people;
 	public int sadaebu;
 	
-	
 	void setstates(){ //맨 처음 나라의 상태를 랜덤설정
 	army = (int)(Math.random()*41)+30;
 	money = (int)(Math.random()*41)+30;
 	people = (int)(Math.random()*41)+30;
 	sadaebu = (int)(Math.random()*41)+30;
+	descendent = 1; // 몇 번째 왕인지 
+    score = 0; // 점수
 	}
 	
 	void showstates(){ // 나라의 상태 및 년도를 출력
@@ -165,9 +170,16 @@ class States extends Statesbase{ // State 클래스
 	boolean printstates(){ // 상태 수치를 체크하고 계속 진행 or 엔딩 출력
 		
 		boolean result=true;
-
+		String str = "";
+      	if(year == 40) {
+    		System.out.printf("제 %d대 왕은 나이가 들어 자리에서 물러나고 그의 아들이 자리에 올랐습니다.\n",descendent);
+         	descendent += 1; // 배율 증가
+         	score += 10000; // 추가 점수 10000점
+         	year = 1; // 연도 초기화
+      	}
 		if ((army>0&&army<100)&&(money>0&&money<100)&&(people>00&&people<100)&&(sadaebu>0&&sadaebu<100)){
 			year++;
+			score += year * descendent; // 점수 변동
 		}
 		
 		else if(army<=0){
@@ -230,7 +242,6 @@ class States extends Statesbase{ // State 클래스
 			System.out.println("이제 더는 상소를 읽으실 필요 없습니다. 저희가 알아서 하겠습니다.");
 			System.out.println("세도가들이 국정을 독점하기로 했습니다. 꼭두각시 왕을 만든 그들은 분열되어 서로 싸우기 시작했습니다.");
 		}
-		
 		return result;
 	}
 	
