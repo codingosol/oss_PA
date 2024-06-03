@@ -2,15 +2,20 @@
 // 시대 배경 조선시대로 바꾸고 이벤트 추가함
 // 점수 시스템 추가
 // 스코어보드 시스템 추가
+// GUI 적용 시작
+// 스코어보드에 남을 이름을 입력하는 LoginScreen 창 추가
 
 import java.util.*;
 import java.lang.*;
 import java.io.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.*;
 
 class Kingdom{ // 메인 클래스 Kingdom 
 	public static void main(String[]args){
 		
-		Scanner userinput = new Scanner(System.in);
 		Systems systems = new Systems();
 		Statesbase statesbase = new Statesbase();
 		States states = new States();
@@ -43,12 +48,57 @@ class Kingdom{ // 메인 클래스 Kingdom
 		}
 	}
 }
-
+class LoginScreen extends JFrame{
+	JTextField Username;
+	String username;
+	LoginScreen(){
+		setTitle("Enter your username");
+		setResizable(false);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setLayout(new GridLayout(2,1));
+		setLocation(700,450);
+		JPanel panel = new JPanel();
+		JLabel username = new JLabel("Username : ");
+		JButton Button = new JButton("Enter");
+		username.setPreferredSize(new Dimension(80,10));
+		Button.addActionListener(new ButtonClickListener());
+		Username = new JTextField(20);
+		panel.add(username);
+		panel.add(Username);
+		Container c = getContentPane();
+		c.add(panel);
+		c.add(Button);
+		pack();
+		//setSize(300,300);
+		setVisible(true);
+		// 기다리기
+        synchronized(this) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+	}
+	class ButtonClickListener implements ActionListener {
+		 public void actionPerformed (ActionEvent e) {
+			 username = Username.getText();
+			 synchronized(LoginScreen.this) {
+	             LoginScreen.this.notify();
+	         }
+			 dispose();
+		 }
+	}
+	
+	public String getUsername() {
+        return username;
+    }
+}
 class Systems{ // 시스템 클래스 (시작/끝) 
 	String username = "";
 	void start(){ // 시작 (파일 입출력,예외처리)
-		Scanner scn = new Scanner(System.in);
-		username = scn.nextLine();
+		LoginScreen login = new LoginScreen();
+		username = login.getUsername();
 		try{
 			File storyfile = new File("story.txt");
 			Scanner story = new Scanner(storyfile);
