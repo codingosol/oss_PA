@@ -10,8 +10,8 @@
 
 # 실행 예시
    ### Java에서 실행한 결과
-   ![image](https://github.com/codingosol/oss_PA/assets/124445740/5a13bc10-bb0c-4dd9-abee-a4dae3363a28)
-
+   ![GIF](https://github.com/codingosol/oss_PA/assets/124445740/d5f2e2cb-906c-4595-927d-4b1abdc7e9ef)
+   
    ### Docker에서 실행한 결과
    ![image](https://github.com/codingosol/oss_PA/assets/124445740/4e25dcc9-8410-442f-bcb7-e8d59655df0e)
 
