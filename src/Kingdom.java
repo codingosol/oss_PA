@@ -96,10 +96,6 @@ class StoryScreen extends JFrame { // 초기 스토리 팝업을 위해 최초 1
         setTitle("Story");
         setLayout(new BorderLayout());
         textarea.setEditable(false);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLocation(400, 400);
-        setSize(1000, 300);
-        setVisible(true);
         // 기초 GUI 설정
         JScrollPane scrollPane = new JScrollPane(textarea);
         add(scrollPane, BorderLayout.CENTER);
@@ -109,6 +105,10 @@ class StoryScreen extends JFrame { // 초기 스토리 팝업을 위해 최초 1
         button.addActionListener(new ButtonClickListener());
         buttonPanel.add(button);
         add(buttonPanel, BorderLayout.SOUTH);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocation(400, 400);
+        setSize(1000, 300);
+        setVisible(true);
         // GUI 세부 설정
         File storyfile = new File("story.txt"); // story.txt에서 파일입출력을 통해 스토리 출력
         try {
@@ -159,9 +159,6 @@ class GameScreen extends JFrame { // 실제로 게임이 진행되는 GUI
       setSize(1000, 400);
       // X11 자체의 문제로 크기가 증가하지 않음...
 		setTitle("Joseon");
-      setDefaultCloseOperation(EXIT_ON_CLOSE);
-      setLocation(400, 400);
-      setVisible(true);
       // 기초 GUI 설정
 		JScrollPane scrollPane = new JScrollPane(eventarea);
 		setLayout(new BorderLayout());
@@ -173,6 +170,9 @@ class GameScreen extends JFrame { // 실제로 게임이 진행되는 GUI
 		panel.add(ybutton);
 		panel.add(nbutton);
 		add(panel, BorderLayout.SOUTH);
+      setDefaultCloseOperation(EXIT_ON_CLOSE);
+      setLocation(400, 400);
+      setVisible(true);
 		// 세부 GUI 설정
 		ybutton.setPreferredSize(new Dimension(160, 30));
       ybutton.addActionListener(new ButtonClickListener());
@@ -236,9 +236,6 @@ class EndScreen extends JFrame // 게임 종료 화면과 scoreboard를 출력�
 	{
 		setTitle("Game Result");
       setDefaultCloseOperation(EXIT_ON_CLOSE);
-      setLocation(450, 200);
-      setSize(500, 800);
-      setVisible(true);
       // 기본 GUI 설정
 		setLayout(new BorderLayout());
 		add(gameresult, BorderLayout.NORTH);
@@ -251,6 +248,9 @@ class EndScreen extends JFrame // 게임 종료 화면과 scoreboard를 출력�
 		panel.add(restart);
 		panel.add(quit);
 		add(panel, BorderLayout.SOUTH);
+      setLocation(450, 200);
+      setSize(500, 800);
+      setVisible(true);
       // 세부 GUI 설정
       // 이번 게임 결과표 출력
 		String str = String.format("[통치기간 : %d대, %d년]\n",states.descendent, states.year);
