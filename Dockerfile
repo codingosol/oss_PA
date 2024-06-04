@@ -33,4 +33,5 @@ RUN javac -encoding UTF-8 src/Kingdom.java
 CMD ["java", "-Dfile.encoding=UTF-8", "-cp", "src", "Kingdom"]
 
 # xhost +local:docker로 x11 포워딩 지정 후
-# docker run -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix kingdom:0.1 로 실행
+# 1. docker run -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix kingdom:version 로 실행 (검증)
+# 2. docker run --rm -it -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY --runtime nvidia -e NVIDIA_DRIVER_CAPABILITIES=all -e NVIDIA_VISIBLE_DEVICES=all kingdom:version (미검증)

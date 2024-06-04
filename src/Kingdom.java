@@ -407,33 +407,34 @@ class States extends Statesbase{ // State 클래스
       pollArea.append(str);
       str = String.format("<나라의 상태>\n"); // 현재 상태를 시각적으로 표시
       pollArea.append(str);
-      
+      // 20블록에서 50블록으로 변경
       str = String.format(" [士] 충성  %4d : ",sadaebu);
       pollArea.append(str);
-      for(int i=0;i<sadaebu/5;i++){
+      // 총 20블록
+      for(int i=0;i<sadaebu/2;i++){
     	  pollArea.append("■");
       }
-      for(int j=0;j<20-sadaebu/5;j++){
+      for(int j=0;j<50-sadaebu/2;j++){
     	  pollArea.append("□");
       }
       pollArea.append("\n");
       
       str = String.format(" [民] 민심  %4d : ",people);
       pollArea.append(str);
-      for(int i=0;i<people/5;i++){
+      for(int i=0;i<people/2;i++){
     	  pollArea.append("■");
       }
-      for(int j=0;j<20-people/5;j++){
+      for(int j=0;j<50-people/2;j++){
     	  pollArea.append("□");
       }
       pollArea.append("\n");
       
       str = String.format(" [軍] 군사  %4d : ",army);
       pollArea.append(str);
-      for(int i=0;i<army/5;i++){
+      for(int i=0;i<army/2;i++){
          pollArea.append("■");
       }
-      for(int j=0;j<20-army/5;j++){
+      for(int j=0;j<50-army/2;j++){
     	  pollArea.append("□");
       }
       pollArea.append("\n");
@@ -441,10 +442,10 @@ class States extends Statesbase{ // State 클래스
       
       str = String.format(" [商] 경제  %4d : ",money);
       pollArea.append(str);
-      for(int i=0;i<money/5;i++){
+      for(int i=0;i<money/2;i++){
     	  pollArea.append("■");
       }
-      for(int j=0;j<20-money/5;j++){
+      for(int j=0;j<50-money/2;j++){
     	  pollArea.append("□");
       }
       pollArea.append("\n");

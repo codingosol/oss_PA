@@ -60,7 +60,9 @@ x11이 설치되지 않았다면 sudo apt-get install x11-apps 를 통해 다운
 ```
 docker build -t kingdom:0.1
 
-docker run --name kingdom -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix kingdom:0.1 # X11 포워딩으로 GUI 출력
+docker run --name kingdom -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix kingdom:version # X11 포워딩으로 GUI 출력 (검증)
+
+docker run --rm -it -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY --runtime nvidia -e NVIDIA_DRIVER_CAPABILITIES=all -e NVIDIA_VISIBLE_DEVICES=all kingdom:version (미검증)
 
 ```
 
