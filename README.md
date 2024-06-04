@@ -8,6 +8,13 @@
 * Reigns 게임의 이벤트 및 Y/N 선택 기능 구현
 * 추가적으로 Scoreboard 시스템 구현
 
+# 실행 예시
+   ### Java에서 실행한 결과
+   ![image](https://github.com/codingosol/oss_PA/assets/124445740/5a13bc10-bb0c-4dd9-abee-a4dae3363a28)
+
+   ### Docker에서 실행한 결과
+   ![image](https://github.com/codingosol/oss_PA/assets/124445740/4e25dcc9-8410-442f-bcb7-e8d59655df0e)
+
 # Reference
 
 [1] https://github.com/psw9808/Java-Term-Project 로부터 기본 아이디어 가져옴
