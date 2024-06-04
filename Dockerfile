@@ -34,4 +34,5 @@ CMD ["java", "-Dfile.encoding=UTF-8", "-cp", "src", "Kingdom"]
 
 # xhost +local:docker로 x11 포워딩 지정 후
 # 1. docker run -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix kingdom:version 로 실행 (검증)
+# 하지만 GUI 창의 크기가 제대로 조절되지 않는 문제 있음 (1000*400)은 제대로 표기 되는 크기이나 (1980*1020) 해상도로 실행할 경우 창의 크기가 오히려 작아짐
 # 2. docker run --rm -it -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY --runtime nvidia -e NVIDIA_DRIVER_CAPABILITIES=all -e NVIDIA_VISIBLE_DEVICES=all kingdom:version (미검증)
