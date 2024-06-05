@@ -10,8 +10,8 @@
 
 # 실행 예시
    ### Java에서 실행한 결과
-   ![GIF](https://github.com/codingosol/oss_PA/assets/124445740/d5f2e2cb-906c-4595-927d-4b1abdc7e9ef)
-   
+   ![gif](https://github.com/codingosol/oss_PA/assets/124445740/9a672255-855b-4205-85b9-cd1ddf99413b)
+
    ### Docker에서 실행한 결과
    ![image](https://github.com/codingosol/oss_PA/assets/124445740/4e25dcc9-8410-442f-bcb7-e8d59655df0e)
 
@@ -45,7 +45,8 @@
 
    시스템 변수 -> 편집 -> 새로 만들기 -> %JAVA_HOME%\bin 지정
 
-3. 이후 자바 IDE 설치 후 IDE를 통해 자바 파일 실행 
+3. 이후 자바 IDE 설치 후 IDE를 통해 자바 파일 실행
+
 ```
 ## Linux
 
@@ -74,14 +75,14 @@
 
 1. 터미널에서 xhost +local:docker로 x11 포워딩 지정
 
-2. x11이 설치되지 않았다면 sudo apt-get install x11-apps 를 통해 다운로드
+2. x11이 설치되지 않았다면 sudo apt-get install x11-apps 를 통해 다운로드 후 1번 실행
 
-3. 위 방법으로도 실행되지 않는다면 sudo apt-get install xvfb \
+3. 위 방법으로도 실행되지 않는다면 sudo apt-get install -y xvfb \
     libxrender1 \
     libxtst6 \
     libxi6 \
     libxext6
-    실행하기
+    실행하여 xvfb 설치 후 재실행
 
 ```
 
@@ -109,6 +110,9 @@
   1. StoryScreen Story - 프로그램 실행 시 최초 1회에 한해 Story.txt 파일의 내용 GUI로 출력.
   2. System.start() 함수와 System.end() 함수를 이용해 사용자가 게임 종료를 선택하기 전까지 게임 반복 실행.
 
+### abstract class Screen
+- Description : 아래 4가지 종류의 Screen들에서 공통적으로 사용되는 ButtonClickListener를 선언하는 abstract class.
+
 ### class LoginScreen
 - Description : 새로운 게임 시작 시 사용자명을 입력하는 작은 창을 띄우는 클래스
    TextField에 사용자명을 입력하고 Enter 버튼을 누를 시 사용자 명 전달함
@@ -123,6 +127,7 @@
   2. EventArea : 이벤트 내용을 출력하는 TextArea.
   3. ybutton/nbutton : 이벤트에 대해서 예/아니오 선택지를 전달하는 JButton.
   반복문에 위치한 states.showstate(), states.printstate(), event.occurevent() 함수를 통하여 내부 값을 조정함.
+  최초 설정 시 로딩 바 추가함 (실제 로딩과는 상관 없음)
 
 ### class EndScreen
 - Description : 게임 종료 시 결과창과 스코어보드를 출력하고 게임 재시작 여부를 묻는 창을 출력하는 클래스
@@ -133,9 +138,6 @@
 - Description : 어떤 창이 띄워지고 실행되는지 전체적 흐름을 담당하는 클래스
   1. start() 함수 : LoginScreen -> GameScreen 순으로 실행.
   2. end() 함수 : EndScreen 실행 후 EndScreen의 사용자 선택에 따라 게임 종료 / 반복 선택.
-
-### clas Statesbase
-- Description : 상속을 위한 superclass (별 기능과 의미 없음).
 
 ### class States
 - Description : 각 Screen에서 사용할 함수들을 모아 놓은 클래스
@@ -150,8 +152,9 @@
 
 # TODO List
 * 원본 Reigns 게임에는 사망하는 것 이외에 조건을 만족할 경우 (특정 sequential 이벤트 모두 성공) 볼 수 있는 특수 엔딩들이 있음. 이를 구현하기.
-* 방향키로 예/아니오 선택하는 기능 추가하기
+* 방향키로 예/아니오 선택하는 기능 추가하기.
 * 원본 게임과 같이 마우스로 가운데 카드를 왼쪽/오른쪽으로 당겨 예/아니오를 선택하는 기능 추가하기(Java Swing으로 구현하기 어려워서 버튼으로 대체함).
+* 원본 게임과 같이 선택지에 마우스 커서를 올리면 예측 실행 결과를 + / - 로 표기해주는 기능 추가하기.
 * 현재 java GUI가 도커에서 x11 포워딩으로 실행할 경우 창 크기가 의도한 크기대로 나오지 않고 작게 나오는 문제 있음. 이를 수정하기.
   - GameScreen의 크기를 1980 X 1200 해상도로 지정하는 것 보다 1000 X 400 해상도로 지정하는 것이 크기가 더 큼
 
