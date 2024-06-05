@@ -9,8 +9,6 @@
 // +) 기존의 states에서 이루어졌던 sysout 함수들을 모두 textarea에 관련된 append함수로 수정
 // 게임 종료 창과 스코어보드를 출력하는 EndScreen 추가
 // +) 기타 함수 parameter와 코드 수정
-// java GUI는 도커에서 작동 X, 그냥 일반 window에서만 실행하기로 함
-
 
 import java.util.*;
 import java.lang.*;
@@ -24,7 +22,6 @@ class Kingdom{ // 메인 클래스 Kingdom
    public static void main(String[]args){
       
       Systems systems = new Systems();
-      Statesbase statesbase = new Statesbase();
       States states = new States();
       Events events = new Events();
 
@@ -40,7 +37,14 @@ class Kingdom{ // 메인 클래스 Kingdom
    }
 }
 
-class LoginScreen extends JFrame{ // 스코어보드에 저장될 사용자 이름을 입력하는 GUI
+abstract class Screen extends JFrame{
+	abstract class ButtonClickListener implements ActionListener{
+		public void actionPerformed() {;
+		}
+	}
+}
+
+class LoginScreen extends Screen{ // 스코어보드에 저장될 사용자 이름을 입력하는 GUI
 	JTextField Username;
 	String username;
 	LoginScreen(){
@@ -49,7 +53,7 @@ class LoginScreen extends JFrame{ // 스코어보드에 저장될 사용자 이�
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLayout(new GridLayout(2,1));
 		setLocation(700,450);
-      setVisible(true);
+		setVisible(true);
       // 기초 GUI 설정
 		JPanel panel = new JPanel();
 		JLabel username = new JLabel("Username : ");
@@ -72,6 +76,7 @@ class LoginScreen extends JFrame{ // 스코어보드에 저장될 사용자 이�
                 e.printStackTrace();
             }
         }
+        dispose(); // 창 닫기
 	}
 	class ButtonClickListener implements ActionListener { // 버튼 액션을 전달하는 클래스
 		 public void actionPerformed (ActionEvent e) {
@@ -79,7 +84,6 @@ class LoginScreen extends JFrame{ // 스코어보드에 저장될 사용자 이�
 			synchronized(LoginScreen.this) {
 	         LoginScreen.this.notify();
 	      }
-			dispose(); // 창 닫기
 		}
 	}
 	
@@ -88,7 +92,7 @@ class LoginScreen extends JFrame{ // 스코어보드에 저장될 사용자 이�
    }
 }
 
-class StoryScreen extends JFrame { // 초기 스토리 팝업을 위해 최초 1회 실행되는 GUI
+class StoryScreen extends Screen { // 초기 스토리 팝업을 위해 최초 1회 실행되는 GUI
 
     JTextArea textarea = new JTextArea(); 
 
@@ -100,14 +104,14 @@ class StoryScreen extends JFrame { // 초기 스토리 팝업을 위해 최초 1
         JScrollPane scrollPane = new JScrollPane(textarea);
         add(scrollPane, BorderLayout.CENTER);
         JPanel buttonPanel = new JPanel();
-        JButton button = new JButton("Start Game");
+        JButton button = new JButton("게임 시작");
         button.setPreferredSize(new Dimension(160, 30));
         button.addActionListener(new ButtonClickListener());
         buttonPanel.add(button);
         add(buttonPanel, BorderLayout.SOUTH);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocation(400, 400);
-        setSize(1000, 300);
+        setSize(700, 350);
         setVisible(true);
         // GUI 세부 설정
         File storyfile = new File("story.txt"); // story.txt에서 파일입출력을 통해 스토리 출력
@@ -137,26 +141,33 @@ class StoryScreen extends JFrame { // 초기 스토리 팝업을 위해 최초 1
                e.printStackTrace();
             }
          }
+         dispose();
    }
+    
    class ButtonClickListener implements ActionListener { // Start Game 버튼 눌림을 알리는 클래스
 		public void actionPerformed (ActionEvent e) {
 			synchronized(StoryScreen.this) {
 	         StoryScreen.this.notify();
 	      }
-		dispose();
 		}
    }
+   
+   class InvalidStoryFormatException extends Exception {
+	   public InvalidStoryFormatException( ) {
+	      super();
+	   }
+	}
 }
 
-class GameScreen extends JFrame { // 실제로 게임이 진행되는 GUI
+class GameScreen extends Screen { // 실제로 게임이 진행되는 GUI
 	JTextArea pollarea = new JTextArea(); // 그래프를 표기할 공간
 	JTextArea eventarea = new JTextArea(); // 이벤트를 표기할 공간
 	States states;
-   Events events;
+    Events events;
 	GameScreen(States states, Events events) { // System으로부터 states와 events를 받아옴
       this.states = states; 
       this.events = events;
-      setSize(1000, 400);
+      setSize(800, 400);
       // X11 자체의 문제로 크기가 증가하지 않음...
 		setTitle("Joseon");
       // 기초 GUI 설정
@@ -174,17 +185,28 @@ class GameScreen extends JFrame { // 실제로 게임이 진행되는 GUI
       setLocation(400, 400);
       setVisible(true);
 		// 세부 GUI 설정
-		ybutton.setPreferredSize(new Dimension(160, 30));
+	  ybutton.setPreferredSize(new Dimension(160, 30));
       ybutton.addActionListener(new ButtonClickListener());
       // yes 버튼의 리스너 추가
       nbutton.setPreferredSize(new Dimension(160, 30));
       nbutton.addActionListener(new ButtonClickListener());
       // no 버튼의 리스너 추가
       // 초기 설정 시작
-      eventarea.append("<나라의 상태를 설정합니다.>\n"); // 처음 나라의 상태를 설정할때 메세지 출력
-      try{
-        	Thread.sleep(500);
-      }catch(Exception e){} //딜레이
+      for(int c = 0; c < 51; c++) // 로딩 바 추가 (실 기능은 별로 없음)
+      {
+    	  eventarea.append("<조선의 초기 상태를 설정합니다.>\n"); // 처음 나라의 상태를 설정할때 메세지 출력
+    	  for(int i=0;i<c;i++){
+    		  eventarea.append("■");
+    	  }
+    	  for(int j=0;j<50-c;j++){
+    		  eventarea.append("□");
+    	  }
+    	  try{
+    		  Thread.sleep(25);
+    	  }catch(Exception e){} //딜레이
+    	  eventarea.setText("");
+      }
+
       states.setstates();
       // 초기 설정 종료
       while(true){ // 반복 시작
@@ -227,7 +249,7 @@ class GameScreen extends JFrame { // 실제로 게임이 진행되는 GUI
 	}
 }
 
-class EndScreen extends JFrame // 게임 종료 화면과 scoreboard를 출력하는 GUI
+class EndScreen extends Screen // 게임 종료 화면과 scoreboard를 출력하는 GUI
 {
 	JTextArea gameresult = new JTextArea();
 	JTextArea scoreboard = new JTextArea();
@@ -242,9 +264,9 @@ class EndScreen extends JFrame // 게임 종료 화면과 scoreboard를 출력�
 		add(scoreboard, BorderLayout.CENTER);
 		JPanel panel = new JPanel();
 		JButton restart = new JButton("다시 하기");
-		restart.addActionListener(new ButtonClickListener(this));
+		restart.addActionListener(new ButtonClickListener());
 		JButton quit = new JButton("게임 종료");
-		quit.addActionListener(new ButtonClickListener(this));
+		quit.addActionListener(new ButtonClickListener());
 		panel.add(restart);
 		panel.add(quit);
 		add(panel, BorderLayout.SOUTH);
@@ -270,19 +292,13 @@ class EndScreen extends JFrame // 게임 종료 화면과 scoreboard를 출력�
 	   dispose(); // 창 닫기
 	}
 	class ButtonClickListener implements ActionListener { // 버튼 클릭을 감지하기 위한 클래스
-		EndScreen parent; // 부모 field에 isquit 변수를 수정하기 위해 parent 지정
-
-	   ButtonClickListener(EndScreen parent) { // 생성자
-	      this.parent = parent;
-	   }
-
 	   public void actionPerformed(ActionEvent e) {
 	      if (e.getActionCommand().equals("다시 하기")) {
 	         // Yes 버튼이 클릭된 경우의 처리
-	         parent.isquit = false; // isquit 값을 false로 설정
+	    	 EndScreen.this.isquit = false; // isquit 값을 false로 설정
 	      } else if (e.getActionCommand().equals("게임 종료")) {
 	         // No 버튼이 클릭된 경우의 처리
-	         parent.isquit = true; // isquit 값을 true로 설정
+	    	  EndScreen.this.isquit = true; // isquit 값을 true로 설정
 	      }
 	      synchronized (EndScreen.this) { // wait 풀기
 	         EndScreen.this.notify();
@@ -365,7 +381,7 @@ class Systems{ // 게임 시스템을 담당
    void start(States states, Events events){ // 시작
     	LoginScreen login = new LoginScreen(); // 로그인 창
      	username = login.getUsername(); // 사용자명 가져옴
-      GameScreen game = new GameScreen(states, events); // 게임 실행
+     	GameScreen game = new GameScreen(states, events); // 게임 실행
    }
    boolean end(States states){ // 끝 (예외처리)
       EndScreen end = new EndScreen(states,username); // 종료 창 출력 및 종료 여부 판별
@@ -373,15 +389,7 @@ class Systems{ // 게임 시스템을 담당
    }
 }
 
-class Statesbase{ // State 클래스의 상속을 위한 Super클래스 
-   void ending(JTextArea area){
-	  area.append("\n");
-	  area.append("[엔딩 발생]");
-	  area.append("\n");
-   }
-}
-
-class States extends Statesbase{ // State 클래스 
+class States { // State 클래스 
    public int score; // 현재 점수
    public int descendent; // 몇 번째 왕인지
    public int year; 
@@ -481,54 +489,54 @@ class States extends Statesbase{ // State 클래스
       }
       else if(army<=0){
          result=false;
-         super.ending(eventarea);
+         ending(eventarea);
          eventarea.append("군사 수치가 0이 되었습니다.\n");
          eventarea.append("장군 : 적군이 성문까지 왔습니다! 우리에게는 이미 저들을 막을 만한 힘이 없습니다!\n");
          eventarea.append("순식간에 도성까지 왜구가 들어왔고, 왕은 끝내 살해당했습니다.\n");
       }
       else if(army>=100){
          result=false;
-         super.ending(eventarea);
+         ending(eventarea);
          eventarea.append("군사 수치가 100이 되었습니다.\n");
          eventarea.append("장군 : 모반이 일어났습니다! 전권을 제게 넘기십시오!\n");
          eventarea.append("모반을 일으킨 병사들은 나약한 왕을 폐위시켜 가두었고 왕은 얼마 못가 죽었습니다.\n");
       }
       else if(money<=0){
          result=false;
-         super.ending(eventarea);
+         ending(eventarea);
          eventarea.append("경제 수치가 0이 되었습니다.\n");
          eventarea.append("나라가 망했습니다. 극심한 기근으로 아무것도 남지 않았습니다.\n");
       }
       else if(money>=100){
          result=false;
-         super.ending(eventarea);
+         ending(eventarea);
          eventarea.append("경제 수치가 100이 되었습니다.\n");
          eventarea.append("왕이 궁궐 보수와 호화로운 연회에 빠진 사이, 상인들이 새로운 지배층이 되어 왕조가 무너졌습니다.\n");
       }
       else if(people<=0){
          result=false;
-         super.ending(eventarea);
+         ending(eventarea);
          eventarea.append("민심 수치가 0이 되었습니다.\n");
          eventarea.append("굶주림에 처한 백성들이 팔도에서 반란을 일으켰습니다. 더는 막을 수 없습니다!\n");
          eventarea.append("신하들도 뿔뿔이 흩어졌습니다. 나라는 혼란에 빠졌고 혁명으로 새로운 왕조가 탄생했습니다.\n");
       }
       else if(people>=100){
          result=false;
-         super.ending(eventarea);
+         ending(eventarea);
          eventarea.append("민심 수치가 100이 되었습니다.\n");
          eventarea.append("더는 왕을 두려워하지 않는 백성들이 유가적 질서를 무너트리기 위해 난을 일으켰습니다!\n");
          eventarea.append("궁궐이 불타고 있습니다. 왕은 도망치다 갈대밭에서 목숨을 잃었습니다.\n");
       }
       else if(sadaebu<=0){
          result=false;
-         super.ending(eventarea);
+         ending(eventarea);
          eventarea.append("충성 수치가 0이 되었습니다.\n");
          eventarea.append("역성혁명이다! 이 범부를 왕좌에서 끌어내려라!\n");
          eventarea.append("왕은 폐위되었고 대신들은 새로운 왕을 추대하였습니다.\n");
       }
       else if(sadaebu>=100){
          result=false;
-         super.ending(eventarea);
+         ending(eventarea);
          eventarea.append("충성 수치가 100이 되었습니다.\n");
          eventarea.append("이제 더는 상소를 읽으실 필요 없습니다. 저희가 알아서 하겠습니다.\n");
          eventarea.append("세도가들이 국정을 독점하기로 했습니다. 꼭두각시 왕을 만든 그들은 분열되어 서로 싸우기 시작했습니다.\n");
@@ -621,6 +629,11 @@ class States extends Statesbase{ // State 클래스
          System.exit(0);
       }
    }
+   void ending(JTextArea area){
+		  area.append("\n");
+		  area.append("[엔딩 발생]");
+		  area.append("\n");
+	   }
 }
 
 class Events{ // 이벤트 클래스 
@@ -635,7 +648,7 @@ class Events{ // 이벤트 클래스
          }catch(Exception e){} //딜레이
       area.append("<이벤트 발생>\n");
       try{
-         Thread.sleep(2000);
+         Thread.sleep(500);
          }catch(Exception e){} //딜레이
       eventnum=0;
       try{
@@ -674,10 +687,4 @@ class Events{ // 이벤트 클래스
       }
    }
    
-}
-
-class InvalidStoryFormatException extends Exception {
-   public InvalidStoryFormatException( ) {
-      super();
-   }
 }
